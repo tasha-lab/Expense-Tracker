@@ -1,0 +1,67 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId String @id @default(uuid()) @map("UserId")
+  firstName String @map("Firstname")
+  lastName String @map("Lastname")
+  email String @map("Email") @unique
+  username String @unique @map("Username")
+  password String @map("Password")
+  dateCreated DateTime @default(now()) @map("DateCreated")
+  isDeleted Boolean @default(false) @map("Is deleted")
+  lastUpdated DateTime @updatedAt @map("Profile Update")
+
+  expenses Expenses[]
+  categories Category[]
+  budgets Budget[]
+
+  @@map("Users")
+}
+
+model Expenses {
+  expenseId String @id @default(uuid()) @map("ExpenseId")
+  description String @map("Description")
+  amount Decimal @map("Amount")
+  dateCreated DateTime @default(now()) @map("DateCreated")
+  userId String @map("UserId")
+  categoryId String @map("CategoryId")
+
+  user User @relation(fields: [userId], references: [userId])
+  category Category @relation(fields: [categoryId], references: [categoryId])
+
+  @@map("Expenses")
+}
+model Category {
+  categoryId String @id @default(uuid()) @map("CategoryId")
+  name String @map("Name")
+  creationDate DateTime @default(now()) @map("Date-Created")
+  userId String @map("UserId")
+
+  user User @relation(fields: [userId], references: [userId])
+  expenses Expenses[]
+  budgets Budget[]
+
+  @@map("Categories")
+}
+
+model Budget {
+  budgetId String @id @default(uuid()) @map("budgetID")
+  amount Decimal @map("Amount")
+  year DateTime @map("Year")
+  categoryId String @map("CategoryId")
+  userId String @map("UserId")
+
+  category Category @relation(fields: [categoryId], references: [categoryId])
+  user User @relation(fields: [userId], references: [userId])
+
+  @@map("Budget")
+}
