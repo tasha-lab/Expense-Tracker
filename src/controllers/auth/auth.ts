@@ -91,7 +91,7 @@ export const getUserDetails = async (req: userRequest, res: Response) => {
 
     if (!id) {
       res.status(400).json({
-        message: "Cant edit details,please login",
+        message: "Cant get details,please login",
       });
       return;
     }
@@ -108,6 +108,38 @@ export const getUserDetails = async (req: userRequest, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
     console.log(error);
+    return;
+  }
+};
+
+export const updatePrimaryDetails = async (req: userRequest, res: Response) => {
+  try {
+    const id = req.userId;
+
+    if (!id) {
+      res.status(400).json({
+        message: "can't edit details, please login",
+      });
+      return;
+    }
+
+    const { firstName, lastName, username } = req.body;
+
+    const details = await client.user.update({
+      where: { userId: id },
+      data: {
+        firstName,
+        lastName,
+        username,
+      },
+    });
+    res.status(200).json({
+      message: "Details edited successfully",
+      details,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "something went wrong" });
     return;
   }
 };
